@@ -1,160 +1,164 @@
-<?php 
+<?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
+
+// --- Start of Database Connection Handling ---
+$staff_result = ['success' => false, 'data' => [], 'error' => ''];
+
+// Multiple possible paths for connection.php
+$possiblePaths = [
+    'connection.php',           // Same directory
+    '../connection.php',        // Parent directory
+    'config/connection.php',    // Config subdirectory
+    'includes/connection.php',  // Includes subdirectory
+    'db/connection.php',        // Database subdirectory
+];
+
+$databaseConfigPath = null;
+foreach ($possiblePaths as $path) {
+    if (file_exists($path)) {
+        $databaseConfigPath = $path;
+        break;
+    }
+}
+
+if ($databaseConfigPath === null) {
+    $staff_result['error'] = "Critical Error: Database configuration file 'connection.php' not found. Checked paths: " . implode(', ', $possiblePaths);
+    echo "<!-- DEBUG: " . htmlspecialchars($staff_result['error']) . " -->";
+    echo "<!-- DEBUG: Current working directory: " . getcwd() . " -->";
+    echo "<!-- DEBUG: Files in current directory: " . implode(', ', scandir('.')) . " -->";
+} else {
+    echo "<!-- DEBUG: Found connection.php at: " . $databaseConfigPath . " -->";
+    // Include the database connection file
+    include_once $databaseConfigPath;
+
+    // Check if the MySQLi connection was established successfully
+    if (!isset($conn) || $conn === null) {
+        // If $conn is not set or null, it means connection failed
+        $error_message = isset($db_connection_error_mysqli) ? $db_connection_error_mysqli : 'Database connection failed or not established. Check connection.php for details.';
+        $staff_result['error'] = $error_message;
+        echo "<!-- DEBUG: MySQLi connection variable (\$conn) is NOT available. Error: " . htmlspecialchars($staff_result['error']) . " -->";
+    } else {
+        echo "<!-- DEBUG: MySQLi connection variable (\$conn) is available. -->";
+
+        // Check if get_all_staff function exists
+        if (!function_exists('get_all_staff')) {
+            echo '<!-- DEBUG: Error: get_all_staff() function is not defined. Check connection.php. -->';
+            $staff_result['error'] = 'get_all_staff() function not defined in connection.php';
+        } else {
+            echo "<!-- DEBUG: get_all_staff() function is defined. Attempting to fetch staff. -->";
+            // Get all staff members using the function from connection.php
+            $staff_result = get_all_staff();
+
+            // Debugging: Output the raw result of get_all_staff()
+            echo "<!-- DEBUG: Raw \$staff_result from get_all_staff(): " . htmlspecialchars(print_r($staff_result, true)) . " -->";
+        }
+    }
+}
+// --- End of Database Connection Handling ---
+
+echo "<!-- DEBUG: Script finished initial processing. -->";
+
+// Check for success messages from edit/delete operations
+$show_success = false;
+$success_message = '';
+if (isset($_GET['deleted']) && $_GET['deleted'] == '1') {
+    $show_success = true;
+    $success_message = 'Staff member deleted successfully!';
+}
+if (isset($_GET['updated']) && $_GET['updated'] == '1') {
+    $show_success = true;
+    $success_message = 'Staff member updated successfully!';
+}
 ?>
 
-
-      <!-- Main Content -->
-      <div class="main-content">
-        <section class="section">
-          <div class="section-body">
+<!-- Main Content -->
+<div class="main-content">
+    <section class="section">
+        <div class="section-body">
             <div class="row">
-              <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                  <div class="card-header">
-                    <h4>All Services</h4>
-                  </div>
-                  <div class="card-body">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Title</th>
-                          <th scope="col">Description</th>
-                          <th scope="col">Image</th>
-                          <th scope="col">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Mark</td>
-                          <td>Otto</td>
-                          <td>@mdo</td>
-                          <td>@mdo</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">2</th>
-                          <td>Jacob</td>
-                          <td>Thornton</td>
-                          <td>@fat</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">3</th>
-                          <td>Larry</td>
-                          <td>the Bird</td>
-                          <td>@twitter</td>
-                        </tr>
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Title</th>
-                          <th scope="col">Description</th>
-                          <th scope="col">Image</th>
-                          <th scope="col">Actions</th>
-                        </tr>
-</tfoot>
-                    </table>
-                  </div>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>All Staff Members</h4>
+                            <!-- Removed "Add New Staff" button as requested -->
+                            <!-- <a href="add_staff.php" class="btn btn-sm btn-primary">Add New Staff</a> -->
+                        </div>
+                        <div class="card-body">
+                            <?php if ($show_success): ?>
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <strong>Success!</strong> <?php echo htmlspecialchars($success_message); ?>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if ($staff_result['success']): ?>
+                                <?php if (count($staff_result['data']) > 0): ?>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>First Name</th>
+                                                    <th>Last Name</th>
+                                                    <th>Email</th>
+                                                    <th>Phone</th>
+                                                    <th>Position</th>
+                                                    <th>Date Added</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($staff_result['data'] as $staff): ?>
+                                                    <tr>
+                                                        <td><?php echo htmlspecialchars($staff['id']); ?></td>
+                                                        <td><?php echo htmlspecialchars($staff['firstname']); ?></td>
+                                                        <td><?php echo htmlspecialchars($staff['lastname']); ?></td>
+                                                        <td><?php echo htmlspecialchars($staff['email']); ?></td>
+                                                        <td><?php echo htmlspecialchars($staff['phone'] ?? 'N/A'); ?></td>
+                                                        <td><?php echo htmlspecialchars($staff['position'] ?? 'N/A'); ?></td>
+                                                        <td><?php echo date('M j, Y', strtotime($staff['date_added'])); ?></td>
+                                                        <td>
+                                                            <a href="edit_staff.php?id=<?php echo $staff['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                            <a href="delete_staff.php?id=<?php echo $staff['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this staff member?')">Delete</a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="alert alert-info">
+                                        <h5>No Staff Members Found</h5>
+                                        <p>There are no staff members in the database yet.</p>
+                                        <!-- Removed "Add First Staff Member" button as requested, since this page is for viewing only -->
+                                        <!-- <a href="add_staff.php" class="btn btn-primary">Add First Staff Member</a> -->
+                                    </div>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <div class="alert alert-danger">
+                                    <h5>Database Error</h5>
+                                    <p><?php echo htmlspecialchars($staff_result['error']); ?></p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </section>
-        <div class="settingSidebar">
-          <a href="javascript:void(0)" class="settingPanelToggle"> <i class="fa fa-spin fa-cog"></i>
-          </a>
-          <div class="settingSidebar-body ps-container ps-theme-default">
-            <div class=" fade show active">
-              <div class="setting-panel-header">Setting Panel
-              </div>
-              <div class="p-15 border-bottom">
-                <h6 class="font-medium m-b-10">Select Layout</h6>
-                <div class="selectgroup layout-color w-50">
-                  <label class="selectgroup-item">
-                    <input type="radio" name="value" value="1" class="selectgroup-input-radio select-layout" checked>
-                    <span class="selectgroup-button">Light</span>
-                  </label>
-                  <label class="selectgroup-item">
-                    <input type="radio" name="value" value="2" class="selectgroup-input-radio select-layout">
-                    <span class="selectgroup-button">Dark</span>
-                  </label>
-                </div>
-              </div>
-              <div class="p-15 border-bottom">
-                <h6 class="font-medium m-b-10">Sidebar Color</h6>
-                <div class="selectgroup selectgroup-pills sidebar-color">
-                  <label class="selectgroup-item">
-                    <input type="radio" name="icon-input" value="1" class="selectgroup-input select-sidebar">
-                    <span class="selectgroup-button selectgroup-button-icon" data-toggle="tooltip"
-                      data-original-title="Light Sidebar"><i class="fas fa-sun"></i></span>
-                  </label>
-                  <label class="selectgroup-item">
-                    <input type="radio" name="icon-input" value="2" class="selectgroup-input select-sidebar" checked>
-                    <span class="selectgroup-button selectgroup-button-icon" data-toggle="tooltip"
-                      data-original-title="Dark Sidebar"><i class="fas fa-moon"></i></span>
-                  </label>
-                </div>
-              </div>
-              <div class="p-15 border-bottom">
-                <h6 class="font-medium m-b-10">Color Theme</h6>
-                <div class="theme-setting-options">
-                  <ul class="choose-theme list-unstyled mb-0">
-                    <li title="white" class="active">
-                      <div class="white"></div>
-                    </li>
-                    <li title="cyan">
-                      <div class="cyan"></div>
-                    </li>
-                    <li title="black">
-                      <div class="black"></div>
-                    </li>
-                    <li title="purple">
-                      <div class="purple"></div>
-                    </li>
-                    <li title="orange">
-                      <div class="orange"></div>
-                    </li>
-                    <li title="green">
-                      <div class="green"></div>
-                    </li>
-                    <li title="red">
-                      <div class="red"></div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="p-15 border-bottom">
-                <div class="theme-setting-options">
-                  <label class="m-b-0">
-                    <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input"
-                      id="mini_sidebar_setting">
-                    <span class="custom-switch-indicator"></span>
-                    <span class="control-label p-l-10">Mini Sidebar</span>
-                  </label>
-                </div>
-              </div>
-              <div class="p-15 border-bottom">
-                <div class="theme-setting-options">
-                  <label class="m-b-0">
-                    <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input"
-                      id="sticky_header_setting">
-                    <span class="custom-switch-indicator"></span>
-                    <span class="control-label p-l-10">Sticky Header</span>
-                  </label>
-                </div>
-              </div>
-              <div class="mt-4 mb-4 p-3 align-center rt-sidebar-last-ele">
-                <a href="#" class="btn btn-icon icon-left btn-primary btn-restore-theme">
-                  <i class="fas fa-undo"></i> Restore Default
-                </a>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </section>
+</div>
 
-
-
-<?php include_once 'includes/footer.php'; ?>
+<?php
+// Ensure the connection is closed at the end of the script, if close_connection is defined
+if (function_exists('close_connection')) {
+    close_connection();
+}
+include_once 'includes/footer.php';
+?>
