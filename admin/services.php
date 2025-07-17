@@ -71,13 +71,6 @@ echo '<div style="color:blue;">Attempting to query services table...</div>';
 $sql = "SELECT * FROM services ORDER BY id ASC";
 $result = mysqli_query($conn, $sql);
 
-// Debug: After query
-if ($result) {
-    echo '<div style="color:green;">Query executed successfully.</div>';
-} else {
-    echo '<div style="color:red;">Query error: ' . mysqli_error($conn) . '</div>';
-}
-
 if ($result && mysqli_num_rows($result) > 0) {
     $count = 1;
     while ($row = mysqli_fetch_assoc($result)) {
