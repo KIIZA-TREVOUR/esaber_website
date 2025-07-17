@@ -2,50 +2,33 @@
 <?php 
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
-include_once 'includes/connection.php';
+include_once 'includes/config.php';
 
 // Handle form submission
+$message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title']);
-    $description = trim($_POST['description']);
+    $title = mysqli_real_escape_string($conn, $_POST['title']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
     $image = '';
-    $error = '';
-
-    // Handle image upload
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $img_name = basename($_FILES['image']['name']);
-        $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        if (in_array($img_ext, $allowed)) {
-            $new_name = uniqid('service_', true) . '.' . $img_ext;
-            $target_dir = 'assets/img/services/';
-            $target = $target_dir . $new_name;
-            // Ensure the directory exists
-            if (!is_dir($target_dir)) {
-                mkdir($target_dir, 0777, true);
-            }
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
-                $image = $new_name;
-            } else {
-                $error = "Failed to upload image.";
-            }
+        $target_dir = '../assets/img/';
+        $target_file = $target_dir . $img_name;
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+            $image = $img_name;
         } else {
-            $error = "Invalid image file type.";
+            $message = '<div class="alert alert-danger">Image upload failed.</div>';
         }
     }
-
-    if (!$error && $title && $description && $image) {
-        $stmt = $conn->prepare("INSERT INTO services (title, description, image, date_added, added_by) VALUES (?, ?, ?, NOW(), 1)");
-        $stmt->bind_param("sss", $title, $description, $image);
-        if ($stmt->execute()) {
-            header("Location: services.php?success=1");
-            exit();
+    if ($title && $description && $image) {
+        $sql = "INSERT INTO services (title, description, image, date_added, added_by) VALUES ('$title', '$description', '$image', NOW(), 1)";
+        if (mysqli_query($conn, $sql)) {
+            $message = '<div class="alert alert-success">Service added successfully!</div>';
         } else {
-            $error = "Database error: " . $stmt->error;
+            $message = '<div class="alert alert-danger">Error: ' . mysqli_error($conn) . '</div>';
         }
-        $stmt->close();
-    } elseif (!$error) {
-        $error = "Please fill in all fields and upload an image.";
+    } else if (!$message) {
+        $message = '<div class="alert alert-danger">Please fill all fields and upload an image.</div>';
     }
 }
 ?>
@@ -54,37 +37,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<!-- Main Content -->
-<div class="main-content">
-  <section class="section">
-    <div class="section-body">
-      <div class="row">
-        <div class="col-12 col-md-6 col-lg-12">
-          <div class="card">
-            <div class="card-header row">
-              <h4 class="col">Add Service</h4>
-              <a href="services.php" class="btn btn-sm btn-success">All Services</a>
-            </div>
-            <div class="card-body">
-              <form action="" method="POST" enctype="multipart/form-data">
-                <div class="row">
-                  <div class="form-group col-lg-4">
-                    <label for="title">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
+  <!-- Main Content -->
+      <div class="main-content">
+        <section class="section">
+          <div class="section-body">
+            <div class="row">
+              <div class="col-12 col-md-6 col-lg-12">
+                <div class="card">
+                  <div class="card-header row" >
+                    <h4>Add Service</h4>
+                    <a href="services.php" class="btn btn-sm btn-success">All Services</a>
                   </div>
-                  <div class="form-group col-lg-4">
-                    <label for="description">Description</label>
-                    <textarea class="form-control" id="description" name="description" required></textarea>
-                  </div>
-                  <div class="form-group col-lg-4">
-                    <label for="image">Image</label>
-                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
-                  </div>
-                  <div class="form-group col-lg-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Add Service</button>
-                  </div>
-                </div>
-              </form>
+                  <div class="card-body">
+                    <?php echo $message; ?>
+                    <form method="POST" enctype="multipart/form-data">
+                      <div class="row">
+                        <div class="form-group col-lg-4">
+                          <label>Title</label>
+                          <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group col-lg-4">
+                          <label>Description</label>
+                          <input type="text" name="description" class="form-control" required>
+                        </div>
+                        <div class="form-group col-lg-4">
+                          <label>Image</label>
+                          <input type="file" name="image" class="form-control" required>
+                        </div>
+                        <div class="form-group col-lg-4">
+                          <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                      </div>
+                    </form>
             </div>
           </div>
         </div>

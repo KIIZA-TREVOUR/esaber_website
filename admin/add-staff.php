@@ -6,6 +6,7 @@ ini_set('display_errors', 1);
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
 
+
 // Database configuration - Updated based on your phpMyAdmin screenshot
 $host = 'localhost';
 $username = 'root';  // Default XAMPP username
