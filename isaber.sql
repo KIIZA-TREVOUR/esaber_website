@@ -19,8 +19,8 @@ SET time_zone = "+00:00";
 
 --
 -- Database: `isaber`
---
-
+create database isaber;
+use isaber;
 -- --------------------------------------------------------
 
 --
@@ -162,6 +162,7 @@ CREATE TABLE `staff` (
 
 CREATE TABLE `testimonials` (
   `id` int(11) NOT NULL,
+  
   `name` varchar(30) NOT NULL,
   `description` text NOT NULL,
   `position` varchar(30) NOT NULL,
