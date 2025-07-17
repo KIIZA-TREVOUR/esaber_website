@@ -39,7 +39,7 @@ include_once 'includes/sidebar.php';
                   <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" checked>
                   <label class="form-check-label" for="is_active">Active</label>
                 </div>
-                <button type="submit" class="btn btn-primary">Create User</button>
+                <button type="submit" class="btn btn-primary">Add User</button>
               </form>
             </div>
           </div>
