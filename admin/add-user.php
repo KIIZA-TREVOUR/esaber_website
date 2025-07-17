@@ -1,58 +1,7 @@
-<?php ob_start(); ?>
-<?php 
+<?php
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
-include_once 'includes/connection.php';
-
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title']);
-    $description = trim($_POST['description']);
-    $image = '';
-    $error = '';
-
-    // Handle image upload
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $img_name = basename($_FILES['image']['name']);
-        $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        if (in_array($img_ext, $allowed)) {
-            $new_name = uniqid('service_', true) . '.' . $img_ext;
-            $target_dir = 'assets/img/services/';
-            $target = $target_dir . $new_name;
-            // Ensure the directory exists
-            if (!is_dir($target_dir)) {
-                mkdir($target_dir, 0777, true);
-            }
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
-                $image = $new_name;
-            } else {
-                $error = "Failed to upload image.";
-            }
-        } else {
-            $error = "Invalid image file type.";
-        }
-    }
-
-    if (!$error && $title && $description && $image) {
-        $stmt = $conn->prepare("INSERT INTO services (title, description, image, date_added, added_by) VALUES (?, ?, ?, NOW(), 1)");
-        $stmt->bind_param("sss", $title, $description, $image);
-        if ($stmt->execute()) {
-            header("Location: services.php?success=1");
-            exit();
-        } else {
-            $error = "Database error: " . $stmt->error;
-        }
-        $stmt->close();
-    } elseif (!$error) {
-        $error = "Please fill in all fields and upload an image.";
-    }
-}
 ?>
-
-<?php if (isset($error) && $error): ?>
-    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-<?php endif; ?>
 
 <!-- Main Content -->
 <div class="main-content">
@@ -61,29 +10,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="row">
         <div class="col-12 col-md-6 col-lg-12">
           <div class="card">
-            <div class="card-header row">
-              <h4 class="col">Add Service</h4>
-              <a href="services.php" class="btn btn-sm btn-success">All Services</a>
+            <div class="card-header">
+              <h4>Add User</h4>
             </div>
             <div class="card-body">
-              <form action="" method="POST" enctype="multipart/form-data">
-                <div class="row">
-                  <div class="form-group col-lg-4">
-                    <label for="title">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
-                  </div>
-                  <div class="form-group col-lg-4">
-                    <label for="description">Description</label>
-                    <textarea class="form-control" id="description" name="description" required></textarea>
-                  </div>
-                  <div class="form-group col-lg-4">
-                    <label for="image">Image</label>
-                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
-                  </div>
-                  <div class="form-group col-lg-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Add Service</button>
-                  </div>
+              <form action="user_create.php" method="POST">
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" class="form-control" id="username" name="username" maxlength="50" required>
                 </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" maxlength="100" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                  <label for="role">Role</label>
+                  <select class="form-control" id="role" name="role">
+                    <option value="user">User</option>
+                    <option value="editor">Editor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div class="form-group form-check">
+                  <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" checked>
+                  <label class="form-check-label" for="is_active">Active</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Add User</button>
               </form>
             </div>
           </div>
@@ -91,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </section>
-  <!-- Settings Sidebar -->
+  <!-- ...existing settingSidebar code... -->
   <div class="settingSidebar">
     <a href="javascript:void(0)" class="settingPanelToggle"> <i class="fa fa-spin fa-cog"></i>
     </a>
@@ -99,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class=" fade show active">
         <div class="setting-panel-header">Setting Panel
         </div>
+        <!-- ...existing sidebar content... -->
         <div class="p-15 border-bottom">
           <h6 class="font-medium m-b-10">Select Layout</h6>
           <div class="selectgroup layout-color w-50">
@@ -186,4 +143,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <?php include_once 'includes/footer.php'; ?>
-<?php ob_end_flush(); ?>
