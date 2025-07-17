@@ -1,8 +1,8 @@
 <?php 
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
+include_once 'includes/connection.php';
 ?>
-
 
       <!-- Main Content -->
       <div class="main-content">
@@ -18,7 +18,6 @@ include_once 'includes/sidebar.php';
                     <table class="table">
                       <thead>
                         <tr>
-                          <th scope="col">#</th>
                           <th scope="col">Title</th>
                           <th scope="col">Description</th>
                           <th scope="col">Image</th>
@@ -26,29 +25,40 @@ include_once 'includes/sidebar.php';
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Mark</td>
-                          <td>Otto</td>
-                          <td>@mdo</td>
-                          <td>@mdo</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">2</th>
-                          <td>Jacob</td>
-                          <td>Thornton</td>
-                          <td>@fat</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">3</th>
-                          <td>Larry</td>
-                          <td>the Bird</td>
-                          <td>@twitter</td>
-                        </tr>
+<?php
+$sql = "SELECT title, description, image FROM services";
+$result = $conn->query($sql);
+if (!$result) {
+    echo '<div style="color:red;">Query failed: ' . $conn->error . '</div>';
+} else {
+    echo '<!-- Number of services found: ' . $result->num_rows . ' -->';
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo '<!-- DEBUG: ' . htmlspecialchars($row['title']) . ' -->';
+            echo '<tr>';
+            echo '<td>' . htmlspecialchars($row['title']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['description']) . '</td>';
+            echo '<td>';
+            if (!empty($row['image'])) {
+                echo '<img src="assets/img/services/' . htmlspecialchars($row['image']) . '" alt="Service Image" width="50">';
+            } else {
+                echo 'No Image';
+            }
+            echo '</td>';
+            echo '<td>';
+            echo '<a href="#" class="btn btn-sm btn-primary">Edit</a> ';
+            echo '<a href="#" class="btn btn-sm btn-danger">Delete</a>';
+            echo '</td>';
+            echo '</tr>';
+        }
+    } else {
+        echo '<tr><td colspan="4">No services found.</td></tr>';
+    }
+}
+?>
                       </tbody>
                       <tfoot>
                         <tr>
-                          <th scope="col">#</th>
                           <th scope="col">Title</th>
                           <th scope="col">Description</th>
                           <th scope="col">Image</th>

@@ -163,6 +163,7 @@ CREATE TABLE `staff` (
 
 CREATE TABLE `testimonials` (
   `id` int(11) NOT NULL,
+  
   `name` varchar(30) NOT NULL,
   `description` text NOT NULL,
   `position` varchar(30) NOT NULL,
