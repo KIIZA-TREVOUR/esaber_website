@@ -22,6 +22,7 @@
             <li class="dropdown">
               <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="command"></i><span>News</span></a>
               <ul class="dropdown-menu">
+			  
                 <li><a class="nav-link" href="news.php">All News</a></li>
                 <li><a class="nav-link" href="add-news.php">Add News</a></li>
               </ul>
@@ -37,6 +38,14 @@
               <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="command"></i><span>Messages</span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="messages.php">All Messages</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="menu-toggle nav-link has-dropdown"><i
+                  data-feather="briefcase"></i><span>Testimonials</span></a>
+              <ul class="dropdown-menu">
+                <li><a class="nav-link" href="all testimonials.php">all testimonials</a></li>
+                <li><a class="nav-link" href="add testimonials.php">add testimonials</a></li>
               </ul>
             </li>
             <li class="dropdown">
