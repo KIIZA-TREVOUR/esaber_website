@@ -19,8 +19,8 @@ SET time_zone = "+00:00";
 
 --
 -- Database: `isaber`
---
-
+create database isaber;
+use isaber;
 -- --------------------------------------------------------
 
 --

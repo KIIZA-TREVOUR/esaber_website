@@ -1,22 +1,18 @@
 <?php
+
 // Enable error reporting for debugging (remove in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+$hostname="localhost";
+$username="root";
+$password="";
+$database="isaber";
 
-// Database configuration
-$host = 'localhost';
-$username = 'root';         // Default XAMPP username
-$password = '';             // Default XAMPP password (empty)
-$database = 'esaber';       // Your database name
-
-// Create connection
-$conn = new mysqli($host, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$connection = mysqli_connect($hostname, $username, $password, $database);   
+if (!$connection) {
+    die("Connection failed: " . mysqli_connect_error());
+}  else {
+    echo "Connected successfully";
 }
 
-// Set charset to match your database
-$conn->set_charset("utf8mb4");
 ?>
