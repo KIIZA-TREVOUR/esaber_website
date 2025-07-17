@@ -1,6 +1,35 @@
 <?php 
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
+include_once 'includes/config.php';
+
+// Handle form submission
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = mysqli_real_escape_string($conn, $_POST['title']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    $image = '';
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+        $img_name = basename($_FILES['image']['name']);
+        $target_dir = '../assets/img/';
+        $target_file = $target_dir . $img_name;
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+            $image = $img_name;
+        } else {
+            $message = '<div class="alert alert-danger">Image upload failed.</div>';
+        }
+    }
+    if ($title && $description && $image) {
+        $sql = "INSERT INTO services (title, description, image, date_added, added_by) VALUES ('$title', '$description', '$image', NOW(), 1)";
+        if (mysqli_query($conn, $sql)) {
+            $message = '<div class="alert alert-success">Service added successfully!</div>';
+        } else {
+            $message = '<div class="alert alert-danger">Error: ' . mysqli_error($conn) . '</div>';
+        }
+    } else if (!$message) {
+        $message = '<div class="alert alert-danger">Please fill all fields and upload an image.</div>';
+    }
+}
 ?>
 
 
@@ -12,43 +41,30 @@ include_once 'includes/sidebar.php';
               <div class="col-12 col-md-6 col-lg-12">
                 <div class="card">
                   <div class="card-header row" >
-                    <h4>Add News</h4>
-                    <a href="news.php" class="btn btn-sm btn-success">All News</a>
+                    <h4>Add Service</h4>
+                    <a href="services.php" class="btn btn-sm btn-success">All Services</a>
                   </div>
                   <div class="card-body">
-                    <div class="row">
+                    <?php echo $message; ?>
+                    <form method="POST" enctype="multipart/form-data">
+                      <div class="row">
                         <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
+                          <label>Title</label>
+                          <input type="text" name="title" class="form-control" required>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
+                          <label>Description</label>
+                          <input type="text" name="description" class="form-control" required>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
+                          <label>Image</label>
+                          <input type="file" name="image" class="form-control" required>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
+                          <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <button class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
