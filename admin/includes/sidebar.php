@@ -20,6 +20,13 @@
               </ul>
             </li>
             <li class="dropdown">
+              <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="command"></i><span>Home Slider</span></a>
+              <ul class="dropdown-menu">
+                <li><a class="nav-link" href="hero.php">All Home Sliders</a></li>
+                <li><a class="nav-link" href="add-hero.php">Add Home Slider</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
               <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="command"></i><span>News</span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="news.php">All News</a></li>
@@ -37,6 +44,13 @@
               <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="command"></i><span>Messages</span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="messages.php">All Messages</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="command"></i><span>Contant Us</span></a>
+              <ul class="dropdown-menu">
+                <li><a class="nav-link" href="contacts.php">All Contacts</a></li>
+                <li><a class="nav-link" href="add-contact.php">Add Contact</a></li>
               </ul>
             </li>
             <li class="dropdown">

@@ -23,59 +23,7 @@ include_once 'includes/header.php';
                     <a href="contact.html" class="vl-btn3"><span class="text">Schedule Your Visit Now <i class="fa-solid fa-arrow-right"></i></span></a>
                     <a href="https://www.youtube.com/watch?v=Y8XpQpW5OVY" class="play-btn popup-youtube"> <span class="video"><i class="fa-solid fa-play"></i></span> Play Video</a>
                 </div>
-                </div>
               </div>
-              <div class="col-lg-6" data-aos="zoom-in-up" data-aos-duration="1000">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero3-section-area sp1">
-            <div class="bg-img">
-                <img src="assets/img/all-images/hero/hero-img5.png" alt="">
-            </div>
-          <div class="container">
-            <div class="row align-items-center">
-              <div class="col-lg-6">
-                <div class="hero-header">
-                  <h5><img src="assets/img/icons/sub-logo1.svg" alt=""> Gentle Care for Pain-Free Smiles</h5>
-                  <div class="space18"></div>
-                  <h1>Redefining Dental Care With A Personal Touch</h1>
-                  <div class="space20"></div>
-                  <p>At Medicax Clinic, we’re dedicated providing exceptional dental care that puts your smile first, with an team skilled professional.</p>
-                  <div class="space28"></div>
-                  <div class="btn-area1">
-                    <a href="contact.html" class="vl-btn3"><span class="text">Schedule Your Visit Now <i class="fa-solid fa-arrow-right"></i></span></a>
-                    <a href="https://www.youtube.com/watch?v=Y8XpQpW5OVY" class="play-btn popup-youtube"> <span class="video"><i class="fa-solid fa-play"></i></span> Play Video</a>
-                </div>
-                </div>
-              </div>
-              <div class="col-lg-6" data-aos="zoom-in-up" data-aos-duration="1000">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero3-section-area sp1">
-            <div class="bg-img">
-                <img src="assets/img/all-images/hero/hero-img6.png" alt="">
-            </div>
-          <div class="container">
-            <div class="row align-items-center">
-              <div class="col-lg-6">
-                <div class="hero-header">
-                  <h5><img src="assets/img/icons/sub-logo1.svg" alt=""> Gentle Care for Pain-Free Smiles</h5>
-                  <div class="space18"></div>
-                  <h1>Redefining Dental Care With A Personal Touch</h1>
-                  <div class="space20"></div>
-                  <p>At Medicax Clinic, we’re dedicated providing exceptional dental care that puts your smile first, with an team skilled professional.</p>
-                  <div class="space28"></div>
-                  <div class="btn-area1">
-                    <a href="contact.html" class="vl-btn3"><span class="text">Schedule Your Visit Now <i class="fa-solid fa-arrow-right"></i></span></a>
-                    <a href="https://www.youtube.com/watch?v=Y8XpQpW5OVY" class="play-btn popup-youtube"> <span class="video"><i class="fa-solid fa-play"></i></span> Play Video</a>
-                </div>
-                </div>
               </div>
               <div class="col-lg-6" data-aos="zoom-in-up" data-aos-duration="1000">
               </div>

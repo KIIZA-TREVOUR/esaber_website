@@ -2,30 +2,24 @@
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
 
-$settings=getSettingsById($conn, 1);
 if(isset($_POST['submit'])){
-    $id = $settings['id'];  
-  $phone = $_POST['phone'];
-  $address = $_POST['address'];
-  $email = $_POST['email'];
-    $original = $_POST['image_path'];
+  $title = $_POST['title'];
+  $sub_title = $_POST['sub_title'];
   $desc = $_POST['desc'];
   $upload_dir = "uploads/images";
   if(!file_exists($upload_dir)){
     mkdir($upload_dir,0777, true);
   }
-  if(isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE){
+  if(!empty($_FILES['image'])){
     $url = share_file('image',$upload_dir);
-  } else {
-    $url = $original;
   }
-  $results = updateSettings($conn, $id, $phone, $address, $email, $url, $desc);
+  $results = addHero($conn, $title, $sub_title, $desc, $url);
   if($results){
- echo "<script>alert('Success')</script>";
-  echo "<script>window.location.href='settings.php'</script>";
+ echo "<script>alert('Hero Added')</script>";
+  echo "<script>window.location.href='hero.php'</script>";
 } else {
-   echo "<script>alert('unsuccessfull')</script>";
-  echo "<script>window.location.href='settings.php'</script>";
+   echo "<script>alert('Hero Addition unsuccessfull')</script>";
+  echo "<script>window.location.href='add-hero.php'</script>";
 
 }
   }
@@ -41,33 +35,27 @@ if(isset($_POST['submit'])){
               <div class="col-12 col-md-6 col-lg-12">
                 <div class="card">
                   <div class="card-header row" >
-                    <h4>Edit Settings</h4>
-                    <!-- <a href="hero.php" class="btn btn-sm btn-success">Edit Settings</a> -->
+                    <h4>Add Home Slider</h4>
+                    <a href="hero.php" class="btn btn-sm btn-success">All Home Sliders</a>
                   </div>
                   <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
                       <div class="row">
-                          <input type="text" name="id" value="<?=$settings['id']?>" hidden>
                           <div class="form-group col-lg-4">
-                              <label>Contact</label>
-                              <input type="text" value="<?=$settings['contact']?>" class="form-control" name="phone">
+                              <label>title</label>
+                              <input type="text" class="form-control" name="title">
                           </div>
                            <div class="form-group col-lg-4">
-                              <label>Address</label>
-                              <input type="text" value="<?=$settings['address']?>" class="form-control" name="address">
+                              <label>Sub Title</label>
+                              <input type="text" class="form-control" name="sub_title">
                           </div>
                            <div class="form-group col-lg-4">
-                              <label>Email</label>
-                              <input type="email" value="<?=$settings['email']?>" class="form-control" name="email">
-                          </div>
-                           <div class="form-group col-lg-4">
-                              <label>Logo</label><img src="<?=$settings['image']?>" width="35" alt="">
+                              <label>image</label>
                               <input type="file" class="form-control" name="image">
-                              <input type="text" name="image_path" value="<?=$settings['image']?>" hidden>
                           </div>
                           <div class="form-group col-lg-4">
-                              <label>Short Company Description</label>
-                              <textarea name="desc" class="form-control" id=""><?=$settings['description']?></textarea>
+                              <label>Desc</label>
+                              <textarea name="desc" class="form-control" id=""></textarea>
                               <!-- <input type="text" class="form-control" name="desc"> -->
                           </div>
                          

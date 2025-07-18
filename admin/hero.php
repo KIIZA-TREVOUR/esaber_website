@@ -1,81 +1,69 @@
 <?php 
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
+$heros= getHeros($conn);
 
-$settings=getSettingsById($conn, 1);
-if(isset($_POST['submit'])){
-    $id = $settings['id'];  
-  $phone = $_POST['phone'];
-  $address = $_POST['address'];
-  $email = $_POST['email'];
-    $original = $_POST['image_path'];
-  $desc = $_POST['desc'];
-  $upload_dir = "uploads/images";
-  if(!file_exists($upload_dir)){
-    mkdir($upload_dir,0777, true);
+if(isset($_GET['id'])){
+  $res = deleteHero($conn, $_GET['id']);
+  if($res){
+       echo "<script>alert('Hero deleted')</script>";
+       echo "<script>window.location.href='news.php'</script>";
+  } else{
+    echo "<script>alert('fail')</script>";
   }
-  if(isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE){
-    $url = share_file('image',$upload_dir);
-  } else {
-    $url = $original;
-  }
-  $results = updateSettings($conn, $id, $phone, $address, $email, $url, $desc);
-  if($results){
- echo "<script>alert('Success')</script>";
-  echo "<script>window.location.href='settings.php'</script>";
-} else {
-   echo "<script>alert('unsuccessfull')</script>";
-  echo "<script>window.location.href='settings.php'</script>";
-
 }
-  }
- 
+  
 ?>
 
 
-  <!-- Main Content -->
+      <!-- Main Content -->
       <div class="main-content">
         <section class="section">
           <div class="section-body">
             <div class="row">
               <div class="col-12 col-md-6 col-lg-12">
                 <div class="card">
-                  <div class="card-header row" >
-                    <h4>Edit Settings</h4>
-                    <!-- <a href="hero.php" class="btn btn-sm btn-success">Edit Settings</a> -->
+                  <div class="card-header">
+                    <h4>All Home Sliders</h4>
                   </div>
                   <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                      <div class="row">
-                          <input type="text" name="id" value="<?=$settings['id']?>" hidden>
-                          <div class="form-group col-lg-4">
-                              <label>Contact</label>
-                              <input type="text" value="<?=$settings['contact']?>" class="form-control" name="phone">
-                          </div>
-                           <div class="form-group col-lg-4">
-                              <label>Address</label>
-                              <input type="text" value="<?=$settings['address']?>" class="form-control" name="address">
-                          </div>
-                           <div class="form-group col-lg-4">
-                              <label>Email</label>
-                              <input type="email" value="<?=$settings['email']?>" class="form-control" name="email">
-                          </div>
-                           <div class="form-group col-lg-4">
-                              <label>Logo</label><img src="<?=$settings['image']?>" width="35" alt="">
-                              <input type="file" class="form-control" name="image">
-                              <input type="text" name="image_path" value="<?=$settings['image']?>" hidden>
-                          </div>
-                          <div class="form-group col-lg-4">
-                              <label>Short Company Description</label>
-                              <textarea name="desc" class="form-control" id=""><?=$settings['description']?></textarea>
-                              <!-- <input type="text" class="form-control" name="desc"> -->
-                          </div>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Image</th>
+                          <th scope="col">Title</th>
+                          <th scope="col">Sub Title</th>
+                          <th scope="col">Description</th>
+                          
+                          <th scope="col">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php foreach ($heros as $hero):?>
+                        <tr>
+                          <th scope="row">1</th>
+                          <td><img width="35"src="<?=$hero['image']?>" alt="img" class="img-thumbnail" /></td>
+                          <td><?=$hero['title']?></td>
+                          <td><?=$hero['subtitle']?></td>
+                          <td><?=$hero['description']?></td>
+                          
+                          <td><a href="hero.php?id=<?=$hero['id']?>" class="btn-sm bg-warning" ><i class="fas fa-trash
+                          "></i></a></td>
+                        </tr>
+                       <?php endforeach?>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <th scope="col">#</th>
+                           <th scope="col">Image</th>
+                          <th scope="col">Title</th>
+                          <th scope="col">Description</th>
                          
-                          <div class="form-group col-lg-12">
-                              <button class="btn btn-primary" name="submit">Submit</button>
-                          </div>
-                      </div>
-                    </form>
+                          <th scope="col">Actions</th>
+                        </tr>
+                      </tfoot>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -174,5 +162,7 @@ if(isset($_POST['submit'])){
           </div>
         </div>
       </div>
+
+
 
 <?php include_once 'includes/footer.php'; ?>

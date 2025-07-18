@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
+<?php include('connection.php'); 
+include ('functions.php');?>
 <!-- index.html  21 Nov 2019 03:44:50 GMT -->
 <head>
   <meta charset="UTF-8">
