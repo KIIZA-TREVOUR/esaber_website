@@ -5,9 +5,6 @@ ini_set('display_errors', 1);
 
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
-include_once 'includes/connection.php';
-
-
 $news= getNews($conn);
 
 if(isset($_GET['id'])){

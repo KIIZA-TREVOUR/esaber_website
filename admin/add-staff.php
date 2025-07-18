@@ -8,20 +8,20 @@ include_once 'includes/sidebar.php';
 
 
 // Database configuration - Updated based on your phpMyAdmin screenshot
-$host = 'localhost';
-$username = 'root';  // Default XAMPP username
-$password = '';      // Default XAMPP password (empty)
-$database = 'esaber'; // Your database name from the image
+// $host = 'localhost';
+// $username = 'root';  // Default XAMPP username
+// $password = '';      // Default XAMPP password (empty)
+// $database = 'esaber'; // Your database name from the image
 
-// Create connection
-$conn = new mysqli($host, $username, $password, $database);
+// // Create connection
+// $conn = new mysqli($host, $username, $password, $database);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// // Check connection
+// if ($conn->connect_error) {
+//     die("Connection failed: " . $conn->connect_error);
+// }
 
-echo "<!-- Database connection successful -->";
+// echo "<!-- Database connection successful -->";
 
 // Initialize variables
 $message = '';

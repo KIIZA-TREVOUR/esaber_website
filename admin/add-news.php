@@ -1,6 +1,28 @@
 <?php 
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
+
+if(isset($_POST['submit'])){
+  $title = $_POST['title'];
+  $desc = $_POST['desc'];
+  $upload_dir = "uploads/images";
+  if(!file_exists($upload_dir)){
+    mkdir($upload_dir,0777, true);
+  }
+  if(!empty($_FILES['image'])){
+    $url = share_file('image',$upload_dir);
+  }
+  $results = addNews($conn, $title, $desc, $url);
+  if($results){
+ echo "<script>alert('News Added')</script>";
+  echo "<script>window.location.href='news.php'</script>";
+} else {
+   echo "<script>alert('News Addition unsuccessfull')</script>";
+  echo "<script>window.location.href='add-news.php'</script>";
+
+}
+  }
+ 
 ?>
 
 
@@ -16,39 +38,27 @@ include_once 'includes/sidebar.php';
                     <a href="news.php" class="btn btn-sm btn-success">All News</a>
                   </div>
                   <div class="card-body">
-                    <div class="row">
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label>Default Input Text</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <button class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
+                    <form method="post" enctype="multipart/form-data">
+                      <div class="row">
+                          <div class="form-group col-lg-4">
+                              <label>title</label>
+                              <input type="text" class="form-control" name="title">
+                          </div>
+                           <div class="form-group col-lg-4">
+                              <label>image</label>
+                              <input type="file" class="form-control" name="image">
+                          </div>
+                          <div class="form-group col-lg-4">
+                              <label>Desc</label>
+                              <textarea name="desc" class="form-control" id=""></textarea>
+                              <!-- <input type="text" class="form-control" name="desc"> -->
+                          </div>
+                         
+                          <div class="form-group col-lg-4">
+                              <button class="btn btn-primary" name="submit">Submit</button>
+                          </div>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>

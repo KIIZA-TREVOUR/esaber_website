@@ -5,17 +5,17 @@ include_once 'includes/connection.php';
 
 // Handle form submission
 if (isset($_POST['submit'])) {
-    $name = mysqli_real_escape_string($connection, $_POST['name']);
-    $description = mysqli_real_escape_string($connection, $_POST['description']);
-    $position = mysqli_real_escape_string($connection, $_POST['position']);
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    $position = mysqli_real_escape_string($conn, $_POST['position']);
     
     // Insert query
     $query = "INSERT INTO testimonials (name, description, position) VALUES ('$name', '$description', '$position')";
     
-    if (mysqli_query($connection, $query)) {
+    if (mysqli_query($conn, $query)) {
         $success_message = "Testimonial added successfully!";
     } else {
-        $error_message = "Error: " . mysqli_error($connection);
+        $error_message = "Error: " . mysqli_error($conn);
     }
 }
 ?>
