@@ -1,5 +1,17 @@
 <?php
 include_once 'includes/header.php';
+include_once 'admin/includes/connection.php'; // Ensure correct path
+
+// Fetch staff/doctors from the database
+$default_staff_img = 'team-img10.png';
+$staff = [];
+$sql = "SELECT name, specialty, image FROM staff";
+$result = $conn->query($sql);
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $staff[] = $row;
+    }
+}
 ?>
 
 <!--===== HERO AREA STARTS =======-->
@@ -23,131 +35,28 @@ include_once 'includes/header.php';
 <div class="team-inner-section-area sp1">
     <div class="container">
         <div class="row">
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img10.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements13.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Jane Cooper</a>
-                  <div class="space12"></div>
-                  <p>Dentist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img11.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements14.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Ralph Edwards</a>
-                  <div class="space12"></div>
-                  <p>Cardiologist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img12.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements15.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Ralph Edwards</a>
-                  <div class="space12"></div>
-                  <p>Gynecologist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img13.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements16.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Kristin Watson</a>
-                  <div class="space12"></div>
-                  <p>Dermatologist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img14.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements17.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Wade Warren</a>
-                  <div class="space12"></div>
-                  <p>Surgeon Specialist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img10.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements13.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Jane Cooper</a>
-                  <div class="space12"></div>
-                  <p>Dentist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img13.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements16.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Kristin Watson</a>
-                  <div class="space12"></div>
-                  <p>Dermatologist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img14.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements17.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Wade Warren</a>
-                  <div class="space12"></div>
-                  <p>Surgeon Specialist</p>
-              </div>
-          </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="team4-boxarea">
-              <div class="img1">
-                  <img src="assets/img/all-images/team/team-img10.png" alt="" class="team-img10">
-                  <img src="assets/img/elements/elements13.png" alt="" class="elements13 keyframe5">
-              </div>
-              <div class="name-area">
-                  <a href="doctor.html">Dr. Jane Cooper</a>
-                  <div class="space12"></div>
-                  <p>Dentist</p>
-              </div>
-          </div>
-          </div>
+            <?php if (!empty($staff)): ?>
+                <?php foreach ($staff as $member): ?>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="team4-boxarea">
+                            <div class="img1">
+                                <img src="assets/img/all-images/team/<?php echo htmlspecialchars($member['image'] ? $member['image'] : $default_staff_img); ?>" alt="" class="team-img10">
+                                <!-- You can randomize or assign elements images as needed -->
+                                <img src="assets/img/elements/elements13.png" alt="" class="elements13 keyframe5">
+                            </div>
+                            <div class="name-area">
+                                <a href="doctor.html"><?php echo htmlspecialchars($member['name']); ?></a>
+                                <div class="space12"></div>
+                                <p><?php echo htmlspecialchars($member['specialty']); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12">
+                    <p>No staff found.</p>
+                </div>
+            <?php endif; ?>
         </div>
     
             <div class="row">

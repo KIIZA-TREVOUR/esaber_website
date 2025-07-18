@@ -19,14 +19,13 @@ SET time_zone = "+00:00";
 
 --
 -- Database: `isaber`
---
-
+create database isaber;
+use isaber;
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `about_us`
 --
-
 CREATE TABLE `about_us` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -163,6 +162,7 @@ CREATE TABLE `staff` (
 
 CREATE TABLE `testimonials` (
   `id` int(11) NOT NULL,
+  
   `name` varchar(30) NOT NULL,
   `description` text NOT NULL,
   `position` varchar(30) NOT NULL,

@@ -1,115 +1,23 @@
 <?php 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
-
-
-// Database configuration - Updated based on your phpMyAdmin screenshot
-// $host = 'localhost';
-// $username = 'root';  // Default XAMPP username
-// $password = '';      // Default XAMPP password (empty)
-// $database = 'esaber'; // Your database name from the image
-
-// // Create connection
-// $conn = new mysqli($host, $username, $password, $database);
-
-// // Check connection
-// if ($conn->connect_error) {
-//     die("Connection failed: " . $conn->connect_error);
-// }
-
-// echo "<!-- Database connection successful -->";
-
-// Initialize variables
-$message = '';
-$messageType = '';
-$firstname = $lastname = $email = $phone = $position = '';
+include_once 'includes/connection.php';
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    echo "<!-- Form submitted -->";
+if (isset($_POST['submit'])) {
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    $position = mysqli_real_escape_string($conn, $_POST['position']);
     
-    // Get form data and sanitize
-    $firstname = trim($_POST['firstname']);
-    $lastname = trim($_POST['lastname']);
-    $email = trim($_POST['email']);
-    $phone = trim($_POST['phone']);
-    $position = trim($_POST['position']);
+    // Insert query
+    $query = "INSERT INTO testimonials (name, description, position) VALUES ('$name', '$description', '$position')";
     
-    echo "<!-- Form data received: firstname=$firstname, lastname=$lastname, email=$email -->";
-    
-    // Basic validation
-    $errors = [];
-    
-    if (empty($firstname)) {
-        $errors[] = "First name is required";
-    }
-    
-    if (empty($lastname)) {
-        $errors[] = "Last name is required";
-    }
-    
-    if (empty($email)) {
-        $errors[] = "Email is required";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email format";
-    }
-    
-    // Check if email already exists
-    if (empty($errors)) {
-        echo "<!-- Checking for duplicate email -->";
-        $check_email = $conn->prepare("SELECT id FROM staff WHERE email = ?");
-        
-        if ($check_email === false) {
-            $errors[] = "Database error: " . $conn->error;
-        } else {
-            $check_email->bind_param("s", $email);
-            $check_email->execute();
-            $result = $check_email->get_result();
-            
-            if ($result->num_rows > 0) {
-                $errors[] = "Email already exists";
-            }
-            $check_email->close();
-        }
-    }
-    
-    // If no errors, insert data
-    if (empty($errors)) {
-        echo "<!-- Attempting to insert data -->";
-        
-        // Insert data - removed added_by since it can be NULL
-        $stmt = $conn->prepare("INSERT INTO staff (firstname, lastname, email, phone, position) VALUES (?, ?, ?, ?, ?)");
-        
-        if ($stmt === false) {
-            $message = "Prepare failed: " . $conn->error;
-            $messageType = "danger";
-        } else {
-            $stmt->bind_param("sssss", $firstname, $lastname, $email, $phone, $position);
-            
-            if ($stmt->execute()) {
-                $message = "Staff member added successfully! ID: " . $conn->insert_id;
-                $messageType = "success";
-                
-                // Clear form data after successful submission
-                $firstname = $lastname = $email = $phone = $position = '';
-            } else {
-                $message = "Execute failed: " . $stmt->error;
-                $messageType = "danger";
-            }
-            
-            $stmt->close();
-        }
+    if (mysqli_query($conn, $query)) {
+        $success_message = "Testimonial added successfully!";
     } else {
-        $message = implode("<br>", $errors);
-        $messageType = "danger";
+        $error_message = "Error: " . mysqli_error($conn);
     }
 }
-
-$conn->close();
 ?>
 
 <!-- Main Content -->
@@ -120,45 +28,46 @@ $conn->close();
                 <div class="col-12 col-md-6 col-lg-12">
                     <div class="card">
                         <div class="card-header row">
-                            <h4>Add Staff </h4>
-                            <a href="news.php" class="btn btn-sm btn-success">All Staff</a>
+                            <h4>Add testimonials</h4>
+                            <a href="all testimonials.php" class="btn btn-sm btn-success">All testimonials</a>
                         </div>
                         <div class="card-body">
-                            <!-- Display success/error messages -->
-                            <?php if (!empty($message)): ?>
-                                <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
-                                    <?php echo $message; ?>
+                            <!-- Display success or error messages -->
+                            <?php if (isset($success_message)): ?>
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <?php echo $success_message; ?>
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                             <?php endif; ?>
-
-                            <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                            
+                            <?php if (isset($error_message)): ?>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <?php echo $error_message; ?>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <!-- Form -->
+                            <form method="POST" action="">
                                 <div class="row">
                                     <div class="form-group col-lg-4">
-                                        <label>First Name <span class="text-danger">*</span></label>
-                                        <input type="text" name="firstname" class="form-control" value="<?php echo htmlspecialchars($firstname); ?>" required>
+                                        <label>Name</label>
+                                        <input type="text" name="name" class="form-control" required>
                                     </div>
                                     <div class="form-group col-lg-4">
-                                        <label>Last Name <span class="text-danger">*</span></label>
-                                        <input type="text" name="lastname" class="form-control" value="<?php echo htmlspecialchars($lastname); ?>" required>
-                                    </div>
-                                    <div class="form-group col-lg-4">
-                                        <label>Email <span class="text-danger">*</span></label>
-                                        <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>" required>
-                                    </div>
-                                    <div class="form-group col-lg-4">
-                                        <label>Phone</label>
-                                        <input type="text" name="phone" class="form-control" value="<?php echo htmlspecialchars($phone); ?>">
+                                        <label>Description</label>
+                                        <textarea name="description" class="form-control" rows="3" required></textarea>
                                     </div>
                                     <div class="form-group col-lg-4">
                                         <label>Position</label>
-                                        <input type="text" name="position" class="form-control" value="<?php echo htmlspecialchars($position); ?>">
+                                        <input type="text" name="position" class="form-control" required>
                                     </div>
                                     <div class="form-group col-lg-4">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                        <button type="reset" class="btn btn-secondary ml-2">Reset</button>
+                                        <button type="submit" name="submit" class="btn btn-primary">Submit</button>
                                     </div>
                                 </div>
                             </form>
@@ -169,7 +78,6 @@ $conn->close();
         </div>
     </section>
     
-    <!-- Settings Sidebar (kept unchanged) -->
     <div class="settingSidebar">
         <a href="javascript:void(0)" class="settingPanelToggle"> <i class="fa fa-spin fa-cog"></i>
         </a>

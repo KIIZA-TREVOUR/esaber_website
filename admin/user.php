@@ -1,81 +1,79 @@
-<?php ob_start(); ?>
 <?php 
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
-include_once 'includes/config.php';
-
-// Handle form submission
-$message = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $image = '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $img_name = basename($_FILES['image']['name']);
-        $target_dir = '../assets/img/';
-        $target_file = $target_dir . $img_name;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            $image = $img_name;
-        } else {
-            $message = '<div class="alert alert-danger">Image upload failed.</div>';
-        }
-    }
-    if ($title && $description && $image) {
-        $sql = "INSERT INTO services (title, description, image, date_added, added_by) VALUES ('$title', '$description', '$image', NOW(), 1)";
-        if (mysqli_query($conn, $sql)) {
-            $message = '<div class="alert alert-success">Service added successfully!</div>';
-        } else {
-            $message = '<div class="alert alert-danger">Error: ' . mysqli_error($conn) . '</div>';
-        }
-    } else if (!$message) {
-        $message = '<div class="alert alert-danger">Please fill all fields and upload an image.</div>';
-    }
-}
+include_once 'includes/connection.php';
 ?>
 
-<?php if (isset($error) && $error): ?>
-    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-<?php endif; ?>
-
-  <!-- Main Content -->
-      <div class="main-content">
-        <section class="section">
-          <div class="section-body">
-            <div class="row">
-              <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                  <div class="card-header row" >
-                    <h4>Add Service</h4>
-                    <a href="services.php" class="btn btn-sm btn-success">All Services</a>
-                  </div>
-                  <div class="card-body">
-                    <?php echo $message; ?>
-                    <form method="POST" enctype="multipart/form-data">
-                      <div class="row">
-                        <div class="form-group col-lg-4">
-                          <label>Title</label>
-                          <input type="text" name="title" class="form-control" required>
-                        </div>
-                        <div class="form-group col-lg-4">
-                          <label>Description</label>
-                          <input type="text" name="description" class="form-control" required>
-                        </div>
-                        <div class="form-group col-lg-4">
-                          <label>Image</label>
-                          <input type="file" name="image" class="form-control" required>
-                        </div>
-                        <div class="form-group col-lg-4">
-                          <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                      </div>
-                    </form>
+<!-- Main Content -->
+<div class="main-content">
+  <section class="section">
+    <div class="section-body">
+      <div class="row">
+        <div class="col-12 col-md-6 col-lg-12">
+          <div class="card">
+            <div class="card-header row">
+              <h4 class="col">All Users</h4>
+              <a href="add-user.php" class="btn btn-sm btn-success">Add User</a>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Date Created</th>
+                    <th scope="col">Last Login</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+<?php
+$sql = "SELECT id, username, email, role, date_created, last_login, is_active FROM users";
+$result = mysqli_query($conn, $sql);
+if ($result && mysqli_num_rows($result) > 0) {
+    $count = 1;
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo '<tr>';
+        echo '<th scope="row">' . $count++ . '</th>';
+        echo '<td>' . htmlspecialchars($row['username']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['email']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['role']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['date_created']) . '</td>';
+        echo '<td>' . ($row['last_login'] ? htmlspecialchars($row['last_login']) : 'Never') . '</td>';
+        echo '<td>' . ($row['is_active'] ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>') . '</td>';
+        echo '<td>';
+        echo '<a href="#" class="btn btn-sm btn-primary">Edit</a> ';
+        echo '<a href="#" class="btn btn-sm btn-danger">Delete</a>';
+        echo '</td>';
+        echo '</tr>';
+    }
+} else {
+    echo '<tr><td colspan="8">No users found.</td></tr>';
+}
+?>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Date Created</th>
+                    <th scope="col">Last Login</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- Settings Sidebar -->
   <div class="settingSidebar">
     <a href="javascript:void(0)" class="settingPanelToggle"> <i class="fa fa-spin fa-cog"></i>
     </a>
@@ -170,4 +168,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <?php include_once 'includes/footer.php'; ?>
-<?php ob_end_flush(); ?>

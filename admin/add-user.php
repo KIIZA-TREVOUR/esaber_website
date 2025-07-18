@@ -1,81 +1,53 @@
-<?php ob_start(); ?>
-<?php 
+<?php
 include_once 'includes/header.php';
 include_once 'includes/sidebar.php';
-include_once 'includes/config.php';
-
-// Handle form submission
-$message = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $image = '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $img_name = basename($_FILES['image']['name']);
-        $target_dir = '../assets/img/';
-        $target_file = $target_dir . $img_name;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            $image = $img_name;
-        } else {
-            $message = '<div class="alert alert-danger">Image upload failed.</div>';
-        }
-    }
-    if ($title && $description && $image) {
-        $sql = "INSERT INTO services (title, description, image, date_added, added_by) VALUES ('$title', '$description', '$image', NOW(), 1)";
-        if (mysqli_query($conn, $sql)) {
-            $message = '<div class="alert alert-success">Service added successfully!</div>';
-        } else {
-            $message = '<div class="alert alert-danger">Error: ' . mysqli_error($conn) . '</div>';
-        }
-    } else if (!$message) {
-        $message = '<div class="alert alert-danger">Please fill all fields and upload an image.</div>';
-    }
-}
 ?>
 
-<?php if (isset($error) && $error): ?>
-    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-<?php endif; ?>
-
-  <!-- Main Content -->
-      <div class="main-content">
-        <section class="section">
-          <div class="section-body">
-            <div class="row">
-              <div class="col-12 col-md-6 col-lg-12">
-                <div class="card">
-                  <div class="card-header row" >
-                    <h4>Add Service</h4>
-                    <a href="services.php" class="btn btn-sm btn-success">All Services</a>
-                  </div>
-                  <div class="card-body">
-                    <?php echo $message; ?>
-                    <form method="POST" enctype="multipart/form-data">
-                      <div class="row">
-                        <div class="form-group col-lg-4">
-                          <label>Title</label>
-                          <input type="text" name="title" class="form-control" required>
-                        </div>
-                        <div class="form-group col-lg-4">
-                          <label>Description</label>
-                          <input type="text" name="description" class="form-control" required>
-                        </div>
-                        <div class="form-group col-lg-4">
-                          <label>Image</label>
-                          <input type="file" name="image" class="form-control" required>
-                        </div>
-                        <div class="form-group col-lg-4">
-                          <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                      </div>
-                    </form>
+<!-- Main Content -->
+<div class="main-content">
+  <section class="section">
+    <div class="section-body">
+      <div class="row">
+        <div class="col-12 col-md-6 col-lg-12">
+          <div class="card">
+            <div class="card-header">
+              <h4>Add User</h4>
+            </div>
+            <div class="card-body">
+              <form action="user_create.php" method="POST">
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" class="form-control" id="username" name="username" maxlength="50" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" maxlength="100" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                  <label for="role">Role</label>
+                  <select class="form-control" id="role" name="role">
+                    <option value="user">User</option>
+                    <option value="editor">Editor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div class="form-group form-check">
+                  <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" checked>
+                  <label class="form-check-label" for="is_active">Active</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Add User</button>
+              </form>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!-- Settings Sidebar -->
+  <!-- ...existing settingSidebar code... -->
   <div class="settingSidebar">
     <a href="javascript:void(0)" class="settingPanelToggle"> <i class="fa fa-spin fa-cog"></i>
     </a>
@@ -83,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class=" fade show active">
         <div class="setting-panel-header">Setting Panel
         </div>
+        <!-- ...existing sidebar content... -->
         <div class="p-15 border-bottom">
           <h6 class="font-medium m-b-10">Select Layout</h6>
           <div class="selectgroup layout-color w-50">
@@ -170,4 +143,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <?php include_once 'includes/footer.php'; ?>
-<?php ob_end_flush(); ?>
